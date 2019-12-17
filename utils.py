@@ -1,0 +1,88 @@
+import sys
+import heapq, random
+
+"""
+ Data structures useful for implementing SearchAgents
+"""
+
+class Stack:
+    "A container with a last-in-first-out (LIFO) queuing policy."
+    def __init__(self):
+        self.list = []
+
+    def push(self ,item):
+        "Push 'item' onto the stack"
+        self.list.append(item)
+
+    def pop(self):
+        "Pop the most recently pushed item from the stack"
+        return self.list.pop()
+
+    def isEmpty(self):
+        "Returns true if the stack is empty"
+        return len(self.list) == 0
+
+
+class Queue:
+    "A container with a first-in-first-out (FIFO) queuing policy."
+
+    def __init__(self):
+        self.list = []
+
+    def push(self, item):
+        "Enqueue the 'item' into the queue"
+        self.list.insert(0, item)
+
+    def pop(self):
+        """
+          Dequeue the earliest enqueued item still in the queue. This
+          operation removes the item from the queue.
+        """
+        return self.list.pop()
+
+    def isEmpty(self):
+        "Returns true if the queue is empty"
+        return len(self.list) == 0
+
+class PriorityQueue:
+    """
+      Implements a priority queue data structure. Each inserted item
+      has a priority associated with it and the client is usually interested
+      in quick retrieval of the lowest-priority item in the queue. This
+      data structure allows O(1) access to the lowest-priority item.
+
+      Note that this PriorityQueue does not allow you to change the priority
+      of an item.  However, you may insert the same item multiple times with
+      different priorities.
+    """
+
+    def __init__(self):
+        self.heap = []
+
+    def push(self, item, priority):
+        pair = (priority, item)
+        heapq.heappush(self.heap, pair)
+
+    def pop(self):
+        (priority, item) = heapq.heappop(self.heap)
+        return item
+
+    def isEmpty(self):
+        return len(self.heap) == 0
+
+
+def raiseNotDefined():
+  print ("Method not implemented: %s" % inspect.stack()[1][3])
+  sys.exit(1)
+
+def flipCoin(p) :
+    """ p is the beas of the coin in favor of True"""
+    r = random.random()
+    return r < p
+
+def pause():
+  """
+  Pauses the output stream awaiting user feedback.
+  """
+  print("<Press enter/return to continue>")
+  input()
