@@ -56,5 +56,5 @@ class Board():
 
 
 
-def  (filename):
+def (filename):
 	return

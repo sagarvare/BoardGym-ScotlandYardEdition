@@ -14,6 +14,7 @@ class Detectives :
         pass
 
 
+
 class MinimaxAgent(Detectives):
   """
     Your minimax agent (problem 1)
