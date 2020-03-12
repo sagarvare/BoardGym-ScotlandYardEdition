@@ -1,4 +1,6 @@
-*.txt
+*.xml
 *.log
 *.out
 *.dat
+*.ipynb_checkpoints
+*.pyc
