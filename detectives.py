@@ -1,18 +1,23 @@
 
 import collections
 from utils import raiseNotDefined
+from src.scotlandyard import Agent
 
-class Detectives :
-    def __init__(self, depth = '2', evalFn = None):
+class Detectives(Agent) :
+    def __init__(self, index, evalFn = None):
         #super(Detectives, self).__init__()
-        self.numAgents = 5
-        self.depth = int(depth)
+        self.index = index
         if evalFn is not None:
             self.evaluationFunction = evalFn
 
     def evaluationFunction(self, gameState, action):
         pass
 
+
+class RandomAgent(Detectives):
+
+    def getAction(self, gameState):
+        pass
 
 
 class MinimaxAgent(Detectives):

@@ -1,46 +1,132 @@
-from src import Board
-import random
+"""
+The main script to run the scotlandyard game.
+"""
+import utils
+import sys
+from src import keyboardAgents
+import detectives
+import thief
 
-class Game():
-    def __init__(self, file1, level, role, no_of_human_players = 1):
-        # levels will have options - every number corresponding to a default pre-defined
-        # agents or a custom in which case it will take a string defining the agent type for thief and all detectives
+def default(str):
+  return str + ' [Default: %default]'
 
-        self.board = Board(file1)
-        self.human_player = role # either 'thief' or 'detective'. if multiple players then it has to be designed differently
-        self.players = ['theif', 'D1', 'D2', 'D3', 'D4', 'D5']
+def readCommand( argv ):
+    """
+    Processes the command used to run pacman from the command line.
+    """
+    from optparse import OptionParser
+    usageStr = """
+    USAGE:      python run.py <options>
+    EXAMPLES:   (1) python run.py
+                  - starts an interactive game
+              (2) python run.py 
+              #TODO to be completed
+    """
+    parser = OptionParser(usageStr)
 
-        if isinstance(level, int) and level <= 5 and level >= 1:
-            self.level = level
-        else :
-            raise ValueError('The level should be of INTEGER type and should have values between 1-5')
+    # parser.add_option('-n', '--numGames', dest='numGames', type='int',
+    #                 help=default('the number of GAMES to play'), metavar='GAMES', default=1)
+    #TODO we can have a default auto mode. In this case the game will auto run and generate some stats.
+    parser.add_option('-r', '--role', dest='role',
+                    help=default('Chose either one of the three roles - thief, detective or auto'),
+                    metavar='ROLE', default='thief')
+    parser.add_option('-t', '--thief', dest='thief',
+                    help=default('the agent TYPE in the thief module to use'),
+                    metavar='THIEF_TYPE', default='KeyboardAgent')
+    parser.add_option('-d', '--detectives', dest='detectives',
+                    help=default('the agent TYPE in the detectives module to use'),
+                    metavar = 'TYPE', default='RandomDetective')
+    parser.add_option('-k', '--numDetectives', type='int', dest='numDetectives',
+                    help=default('The maximum number of detectives to use'), default=5)
+    parser.add_option('-d1', '--detective1', dest='D1',
+                    help=default('The agent TYPE in the detectives module to use for detective 1'), default='KeyboardAgent')
+    parser.add_option('--timeout', dest='timeout', type='int',
+                    help=default('Maximum length of time an agent can spend computing in a single game'), default=30)
 
-        self.state = GameState(self.board.GetNRandomPositions())
+    options, otherjunk = parser.parse_args(argv)
+    if len(otherjunk) != 0:
+        raise Exception('Command line input not understood: ' + str(otherjunk))
+    args = dict()
+
+    #TODO There is a fancy of loading the pacman and ghost agents here bu using the script similar to pacman but right
+    # now we will implement implement by string matching method
+    #TODO currently assume all the detectives have the same agent type. We can later also built in arguments for defining
+    # agent type for each detective
+
+    if options.role == 'thief' :
+        args['role'] = 'thief'
+        if options.thief == 'KeyboardAgent':
+            args['thief'] = keyboardAgents.KeyboardAgent()
+        elif options.thief == 'minimax':
+            args['thief'] = thief.MinimaxAgent()
+        # multiple elif conditions or use the load agent module from the pacman script.
+        elif options.thief == 'random':
+            args['thief'] = thief.RandomAgent()
+        else:
+            raise Exception('The agent ' + options.thief + ' is not specified in any *Agents.py.')
+
+        args['detectives'] = [detectives.RandomAgent(i+1) for i in range(options.numDetectives)]
+
+    elif options.role == 'detective' :
+        args['role'] = 'detective1'
+        if options.D1 == 'KeyboardAgent':
+            args['detectives'] = [keyboardAgents.KeyboardAgent()] + [detectives.RandomAgent(i+1) for i in range(1,options.numDetectives)]
+        elif options.D1 == 'minimax':
+            args['detectives'] = [detectives.MinimaxAgent()] + [detectives.RandomAgent(i+1) for i in range(1,options.numDetectives)]
+        # multiple elif conditions or use the load agent module from the pacman script.
+        elif options.D1 == 'random':
+            args['thief'] = thief.RandomAgent()
+        else:
+            raise Exception('The agent ' + options.D1 + ' is not specified in any *Agents.py.')
+
+        # check for the first agent type for detective, if not specified assign keyboard.
+
+    else :
+        # Check for the specification for agents for thief and detectives. If not specified for thief, then assign random.
+        args['role'] = 'auto'
+        args['thief'] = thief.RandomAgent()
+        args['detectives'] = [detectives.RandomAgent(i+1) for i in range(options.numDetectives)]
+
+
+    return args
 
 
 
-        return
+def runGames(role, thief, detectives, timeout):
+    # game = Game()
+    # game.play()
+    pass
 
-class Player():
-    def __init__(self, position, bus_tickets, taxi_tickets, ug_tickets, ferry_tickets):
-        self.bus_tickets = bus_tickets
-        self.taxi_tickets = taxi_tickets
-        self.ug_ticket = ug_tickets
-        self.ferry_tickets = ferry_tickets
-        self.position = position
+if __name__ == '__main__':
+  """
+  The main function called when run.py is run
+  from the command line:
 
-class GameState():
-    def __init__(self, positions):
-        '''
-        :param positions: a list of 6 integers that determine the starting position of each player
-        '''
-        self.thief = Player(positions[0], 1000, 1000, 1000, 3)
-        self.detective1 = Player(positions[1], 12, 8, 4, 0)
-        self.detective2 = Player(positions[2], 12, 8, 4, 0)
-        self.detective3 = Player(positions[3], 12, 8, 4, 0)
-        self.detective4 = Player(positions[4], 12, 8, 4, 0)
-        self.detective5 = Player(positions[5], 12, 8, 4, 0)
-        self.move_number = 1
+  > python run.py
+
+  See the usage string for more details.
+
+  > python run.py --help
+  """
+  args = readCommand( sys.argv[1:] ) # Get game components based on input
+  runGames( **args )
+# ---------------------------------------------------------------------------------------------------------
+#
+#     To Do's
+#
+# ---------------------------------------------------------------------------------------------------------
+#
+# Step 1 : An input args parser to read all the input arguments. Define the destination, and the default value for each of the arguments
+#
+# Step 2 : An intermediate run function, that takes in these arguments and instantiates the game with the appropriate theif and detective agents as specified in the input arguments
+#
+# Step 3 : Defaults : a) If no algorithm name specified then by deaulf it is a keyboard human player.
+#                     b) human player is thief if not specified and thief is a keyboard agent
+#                     b) If human player is detective then by default it is always D1
+
+# Every player should have a function called get action. so basically while initializing players we need to also initialize the type of agent for them.
+
+
 
 
 

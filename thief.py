@@ -1,5 +1,7 @@
+from src.scotlandyard import Agent
 
-class thief:
+
+class thief(Agent):
     def __init__(self, depth = '2', evalFn = None):
         self.index = 0
         self.depth = int(depth)
@@ -9,6 +11,10 @@ class thief:
     def evaluationFunction(self, gameState, action):
         pass
 
+class RandomAgent(thief):
+
+    def getAction(self, gameState):
+        pass
 
 class MinimaxAgent(thief):
   """
