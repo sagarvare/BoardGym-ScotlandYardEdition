@@ -6,6 +6,7 @@ import sys
 from src import keyboardAgents
 import detectives
 import thief
+from src.scotlandyard import Game
 
 def default(str):
   return str + ' [Default: %default]'
@@ -91,7 +92,6 @@ def readCommand( argv ):
     return args
 
 
-
 def runGames(role, thief, detectives, timeout):
     # game = Game()
     # game.play()
@@ -109,7 +109,9 @@ if __name__ == '__main__':
   > python run.py --help
   """
   args = readCommand( sys.argv[1:] ) # Get game components based on input
-  runGames( **args )
+  # runGames( **args )
+  game = Game(**args)
+  game.play()
 # ---------------------------------------------------------------------------------------------------------
 #
 #     To Do's

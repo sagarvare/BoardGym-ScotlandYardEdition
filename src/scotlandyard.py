@@ -1,6 +1,7 @@
 from src import Board
 import random
 import utils
+import os
 
 class Agent:
   """
@@ -20,15 +21,20 @@ class Agent:
     utils.raiseNotDefined()
 
 
+class Constants:
+    input_file_name = ''
+    current_directory = ''
+
+
+
 class Game:
-    def __init__(self, file1, level, role, player_type = ['random'], no_of_human_players = 1):
+    def __init__(self,level, role, player_type, no_of_human_players = 1):
         # levels will have options - every number corresponding to a default pre-defined
         # agents or a custom in which case it will take a string defining the agent type for thief and all detectives
 
-        self.board = Board(file1)
+        self.board = Board(os.path.join(Constants.current_directory,Constants.input_file_name))
         self.human_player = role # either 'thief' or 'detective'. if multiple players then it has to be designed differently
         self.players = ['theif', 'D1', 'D2', 'D3', 'D4', 'D5']
-        self.agents = player_type
 
         if isinstance(level, int) and level <= 5 and level >= 1:
             self.level = level
