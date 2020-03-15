@@ -30,10 +30,10 @@ def readCommand( argv ):
     #TODO we can have a default auto mode. In this case the game will auto run and generate some stats.
     parser.add_option('-r', '--role', dest='role',
                     help=default('Chose either one of the three roles - thief, detective or auto'),
-                    metavar='ROLE', default='thief')
+                    metavar='ROLE', default='detective')
     parser.add_option('-t', '--thief', dest='thief',
                     help=default('the agent TYPE in the thief module to use'),
-                    metavar='THIEF_TYPE', default='KeyboardAgent')
+                    metavar='THIEF_TYPE', default='random')
     parser.add_option('-d', '--detectives', dest='detectives',
                     help=default('the agent TYPE in the detectives module to use'),
                     metavar = 'TYPE', default='RandomDetective')
