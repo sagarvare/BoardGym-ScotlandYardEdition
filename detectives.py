@@ -1,5 +1,5 @@
 import collections
-from src.scotlandyard import Agent
+from scotlandyard import Agent
 import random
 import copy
 

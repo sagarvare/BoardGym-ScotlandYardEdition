@@ -1,6 +1,6 @@
-from src import Board
+import Board
 import random
-import utils
+# import utils
 import os
 
 class Agent:
@@ -29,7 +29,6 @@ class Constants:
     current_directory = ''
 
 
-
 class Game:
     def __init__(self, role, thief, detectives, no_of_human_players = 1, level = 1):
         '''
@@ -41,7 +40,7 @@ class Game:
         :param level: for different types of adverserial agents
         '''
 
-        self.board = Board(os.path.join(Constants.current_directory,Constants.input_file_name))
+        self.board = Board.Board(os.path.join(Constants.current_directory,Constants.input_file_name))
         self.human_player = role # either 'thief' or 'detective'. if multiple players then it has to be designed differently
 
         if isinstance(level, int) and level <= 5 and level >= 1:
