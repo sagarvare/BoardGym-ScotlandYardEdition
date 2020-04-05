@@ -1,24 +1,27 @@
-from src import Board
+import Board
 import random
-import utils
+# import utils
 import os
 
 class Agent:
-  """
-  An agent must define a getAction method, but may also define the
-  following methods which will be called if they exist:
-
-  def registerInitialState(self, state): # inspects the starting state
-  """
-  def __init__(self, index=0):
-    self.index = index
-
-  def getAction(self, state):
     """
-    The Agent will receive a GameState (from either {pacman, capture, sonar}.py) and
-    must return an action from Directions.{North, South, East, West, Stop}
+    An agent must define a getAction method, but may also define the
+    following methods which will be called if they exist:
+
+    def registerInitialState(self, state): # inspects the starting state
     """
-    utils.raiseNotDefined()
+    def __init__(self, index=0):
+        self.index = index
+
+    def getAction(self, state):
+        """
+        The Agent will receive a GameState (from either {pacman, capture, sonar}.py) and
+        must return an action from Directions.{North, South, East, West, Stop}
+        """
+        utils.raiseNotDefined()
+
+    def GetLegalMoves(self):
+        utils.raiseNotDefined()
 
 
 class Constants:
@@ -26,36 +29,73 @@ class Constants:
     current_directory = ''
 
 
-
 class Game:
-    def __init__(self,level, role, player_type, no_of_human_players = 1):
-        # levels will have options - every number corresponding to a default pre-defined
-        # agents or a custom in which case it will take a string defining the agent type for thief and all detectives
+    def __init__(self, role, thief, detectives, no_of_human_players = 1, level = 1):
+        '''
 
-        self.board = Board(os.path.join(Constants.current_directory,Constants.input_file_name))
+        :param role: Whether the human player is playing as a thief or a detective
+        :param thief: an object of class thief
+        :param detectives: a list of 5 independent objects of class detective corresponding to each detective
+        :param no_of_human_players: for future for multiple human players
+        :param level: for different types of adverserial agents
+        '''
+
+        self.board = Board.Board(os.path.join(Constants.current_directory,Constants.input_file_name))
         self.human_player = role # either 'thief' or 'detective'. if multiple players then it has to be designed differently
-        self.players = ['theif', 'D1', 'D2', 'D3', 'D4', 'D5']
 
         if isinstance(level, int) and level <= 5 and level >= 1:
             self.level = level
         else :
             raise ValueError('The level should be of INTEGER type and should have values between 1-5')
 
+        self.thief = thief
+        self.detectives = detectives
         self.state = GameState(self.board.GetNRandomPositions())
-        self.state.InitializeAgents(player_type, no_of_human_players)
-
         return
 
     def play(self):
-        for player in self.players():
-            self.PlayTurn(player)
+        for turn in range(1,22):
+            for player in range(6):
+                action = self.PlayTurn(player)
+
+                # update state
+                self.update(player, action)
+            self.state.move_number += 1
+
+                # Check if game over
+        return
+
+    def PlayTurn(self, ind):
+        player = self.detectives[ind]
+        return player.getAction(self.state)
 
 
-    def PlayTurn(self, player):
-        pass
-
-    def update(self):
-        pass
+    def update(self, player, action):
+        self.state.current_player = player
+        if player == 0:
+            if self.state.move_number in [5, 8, 13, 18]:
+                self.state.last_thief_location = action[1]
+            self.state.occupied_positions[player] = action[1]
+            self.state.thief[0] = action [1]
+            if action[0] == 'T' :
+                self.state.thief.taxi_tickets -= 1
+            elif action[0] == 'B' :
+                self.state.thief.bus_tickets -= 1
+            elif action[0] == 'U' :
+                self.state.thief.ug_ticket -= 1
+            elif action[0] == 'F' :
+                self.state.thief.ferry_tickets -= 1
+        else:
+            detective = getattr(self.state, 'detective%d' % player)
+            detective.position = action[1]
+            self.state.occupied_positions[action[1]]
+            if action[0] == 'T' :
+                detective.taxi_tickets -= 1
+            elif action[0] == 'B' :
+                detective.bus_tickets -= 1
+            elif action[0] == 'U' :
+                detective.ug_ticket -= 1
+        return
 
 class Player:
     def __init__(self, position, bus_tickets, taxi_tickets, ug_tickets, ferry_tickets):
@@ -82,9 +122,7 @@ class GameState:
         self.detective4 = Player(positions[4], 12, 8, 4, 0)
         self.detective5 = Player(positions[5], 12, 8, 4, 0)
         self.move_number = 1
+        self.current_player = 0
+        self.occupied_positions = positions.copy()
+        self.last_thief_location = None
 
-    def InitializeAgents(self, p_type, no_of_human_players):
-
-        if len(p_type) != no_of_human_players:
-            raise RuntimeError("The strategies defined {} are not enough strategies defined for the provided number of "
-                               "human players {}".format(p_type,no_of_human_players))

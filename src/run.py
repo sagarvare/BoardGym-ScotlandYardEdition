@@ -1,12 +1,13 @@
 """
 The main script to run the scotlandyard game.
 """
-import utils
 import sys
-from src import keyboardAgents
+sys.path.append('.')
+sys.path.append('../')
+import keyboardAgents
 import detectives
 import thief
-from src.scotlandyard import Game
+from scotlandyard import Game
 
 def default(str):
   return str + ' [Default: %default]'
@@ -39,7 +40,7 @@ def readCommand( argv ):
                     metavar = 'TYPE', default='RandomDetective')
     parser.add_option('-k', '--numDetectives', type='int', dest='numDetectives',
                     help=default('The maximum number of detectives to use'), default=5)
-    parser.add_option('-d1', '--detective1', dest='D1',
+    parser.add_option('-D', '--detective1', dest='D1',
                     help=default('The agent TYPE in the detectives module to use for detective 1'), default='KeyboardAgent')
     parser.add_option('--timeout', dest='timeout', type='int',
                     help=default('Maximum length of time an agent can spend computing in a single game'), default=30)
@@ -48,7 +49,7 @@ def readCommand( argv ):
     if len(otherjunk) != 0:
         raise Exception('Command line input not understood: ' + str(otherjunk))
     args = dict()
-
+    print(options)
     #TODO There is a fancy of loading the pacman and ghost agents here bu using the script similar to pacman but right
     # now we will implement implement by string matching method
     #TODO currently assume all the detectives have the same agent type. We can later also built in arguments for defining
@@ -76,9 +77,11 @@ def readCommand( argv ):
             args['detectives'] = [detectives.MinimaxAgent()] + [detectives.RandomAgent(i+1) for i in range(1,options.numDetectives)]
         # multiple elif conditions or use the load agent module from the pacman script.
         elif options.D1 == 'random':
-            args['thief'] = thief.RandomAgent()
+            args['detectives'] = [detectives.RandomAgent(i+1) for i in range(options.numDetectives)]
         else:
             raise Exception('The agent ' + options.D1 + ' is not specified in any *Agents.py.')
+
+        args['thief'] = thief.RandomAgent()
 
         # check for the first agent type for detective, if not specified assign keyboard.
 
@@ -110,6 +113,7 @@ if __name__ == '__main__':
   """
   args = readCommand( sys.argv[1:] ) # Get game components based on input
   # runGames( **args )
+  print(*args)
   game = Game(**args)
   game.play()
 # ---------------------------------------------------------------------------------------------------------
@@ -118,19 +122,16 @@ if __name__ == '__main__':
 #
 # ---------------------------------------------------------------------------------------------------------
 #
+# **Done**
 # Step 1 : An input args parser to read all the input arguments. Define the destination, and the default value for each of the arguments
-#
+# **Done**
 # Step 2 : An intermediate run function, that takes in these arguments and instantiates the game with the appropriate theif and detective agents as specified in the input arguments
 #
 # Step 3 : Defaults : a) If no algorithm name specified then by deaulf it is a keyboard human player.
 #                     b) human player is thief if not specified and thief is a keyboard agent
 #                     b) If human player is detective then by default it is always D1
-
-# Every player should have a function called get action. so basically while initializing players we need to also initialize the type of agent for them.
-
-
-
-
+#
+# Step 4 : Intializing the agents using the parsed arguments and getattr function, similar to the one used in pacman code.
 
 # ---------------------------------------------------------------------------------------------------------
 #

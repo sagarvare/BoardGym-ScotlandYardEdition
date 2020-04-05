@@ -1,4 +1,4 @@
-from src.scotlandyard import Agent
+from scotlandyard import Agent
 
 
 class thief(Agent):

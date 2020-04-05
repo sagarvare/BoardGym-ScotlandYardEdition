@@ -51,12 +51,12 @@ class Board():
 			node_1.adjacent_ferry_nodes.append(node_number2)
 			node_2.adjacent_ferry_nodes.append(node_number1)
 		else:
-			print "Incorrect transportation format specified."
+			print("Incorrect transportation format specified.")
 
 	def GetPossibleMoves(self, node_number):
-		'''
+		"""
 		returns a bunch of possible moves from the given node.
-		'''
+		"""
 		node = self.GetNode(node_number)
 		possible_moves = []
 
@@ -75,9 +75,9 @@ class Board():
 		return possible_moves   
 
 	def ReadBoard(self, game_file):
-		'''
+		"""
 		Reads the board in.
-		'''
+		"""
 		with open(game_file) as f:
 			row_count = 0
 			file_reader = csv.reader(f, delimiter = ' ')
