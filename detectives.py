@@ -5,6 +5,7 @@ sys.path.append('../')
 from scotlandyard import Agent
 import random
 import copy
+import pdb
 
 class Detectives(Agent) :
     def __init__(self, index, evalFn = None):
@@ -20,16 +21,16 @@ class Detectives(Agent) :
         legal_moves = copy.deepcopy(moves)
         detective_state = getattr(gameState,'detective%d' % self.index)
         for move in moves:
-            if moves[0] == 'F' :
+            if moves[1] == 'F' :
                 legal_moves.remove(move)
-            elif moves[0] == 'T' and detective_state.taxi_tickets <= 0:
+            elif moves[1] == 'T' and detective_state.taxi_tickets <= 0:
                 legal_moves.remove(move)
-            elif moves[0] == 'B' and detective_state.bus_tickets <= 0:
+            elif moves[1] == 'B' and detective_state.bus_tickets <= 0:
                 legal_moves.remove(move)
-            elif moves[0] == 'U' and detective_state.ug_tickets <= 0:
+            elif moves[1] == 'U' and detective_state.ug_tickets <= 0:
                 legal_moves.remove(move)
 
-            if move[1] in gameState.occupied_positions[1:]:
+            if move[0] in gameState.occupied_positions[1:]:
                 legal_moves.remove(move)
 
         return legal_moves
@@ -37,12 +38,12 @@ class Detectives(Agent) :
 
 class RandomAgent(Detectives):
 
-    def getAction(self, gameState):
+    def getAction(self, gameState, board):
         # detective_state = getattr(gameState, 'detective%d' % self.index)
         current_pos = gameState.occupied_positions[self.index]
-        moves = gameState.board.GetPossibleMoves(current_pos)
+        moves = board.GetPossibleMoves(current_pos)
         legal_moves = self.GetLegalMoves(gameState,moves)
-
+        # pdb.set_trace()
         return random.choice(legal_moves)
 
 

@@ -19,16 +19,16 @@ class Thief(Agent):
     def GetLegalMoves(self, gameState, moves):
         legal_moves = copy.deepcopy(moves)
         for move in moves:
-            if move[0] == 'F' and gameState.thief.ferry_tickets <= 0:
+            if move[1] == 'F' and gameState.thief.ferry_tickets <= 0:
                 legal_moves.remove(move)
 
         return legal_moves
 
 class RandomAgent(Thief):
 
-    def getAction(self, gameState):
+    def getAction(self, gameState, board):
         current_pos = gameState.occupied_positions[self.index]
-        moves = gameState.board.GetPossibleMoves(current_pos)
+        moves = board.GetPossibleMoves(current_pos)
         legal_moves = self.GetLegalMoves(gameState,moves)
 
         return random.choice(legal_moves)

@@ -78,6 +78,7 @@ class Board():
 		"""
 		Reads the board in.
 		"""
+		print('INFO - Configuring the board from the input file {} ...'.format(game_file))
 		with open(game_file) as f:
 			row_count = 0
 			file_reader = csv.reader(f, delimiter = ' ')
@@ -99,6 +100,8 @@ class Board():
 					print("blacklisted row:", row)
 					return False
 				self.AddEdge(int(row[0]), int(row[1]), row[2])
+
+		print('INFO - Successfully completed reading the input file. THe board is now configured.')
 
 	def GetNRandomPositions(self, N=6):
 		'''

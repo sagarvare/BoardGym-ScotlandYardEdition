@@ -15,7 +15,7 @@ class Agent:
     def __init__(self, index=0):
         self.index = index
 
-    def getAction(self, state):
+    def getAction(self, state, board):
         """
         The Agent will receive a GameState (from either {pacman, capture, sonar}.py) and
         must return an action from Directions.{North, South, East, West, Stop}
@@ -27,8 +27,8 @@ class Agent:
 
 
 class Constants:
-    input_file_name = ''
-    current_directory = ''
+    input_file_name = 'SCOTMAP.TXT'
+    current_directory = '../data'
 
 
 class Game:
@@ -56,19 +56,26 @@ class Game:
         return
 
     def play(self):
+        print('The starting positions of all the player is {}'.format(self.state.occupied_positions))
         for turn in range(1,22):
+            print('Playing turn {}'.format(turn))
             for player_idx in range(6):
                 action = self.PlayTurn(player_idx)
-
+                print('Action chosen by the player {} is {} and {}'.format(player_idx, action[0], action[1]))
+                if player_idx == 0:
+                    if self.CheckGameOver():
+                        print('game over')
+                        sys.exit(0)
                 # update state
                 self.update(player_idx, action)
-            if self.state.outcome :
+            if self.CheckGameOver() :
                 print('game over')
-                # Call another function, that displays the outcome, game history
-                # Exit from the script
+                sys.exit(0)
+                #TODO Call another function, that displays the outcome, game history and other stats and details of the current game.
+                #TODO Exit from the script.
 
             self.state.move_number += 1
-
+            print('The new occupied positions by the players are {}'.format(self.state.occupied_positions))
                 # Check if game over
         return
 
@@ -76,8 +83,8 @@ class Game:
         if ind == 0:
             player = self.thief
         else :
-            player = self.detectives[ind]
-        return player.getAction(self.state)
+            player = self.detectives[ind-1] #since the detectives list start with 0 indexing but the detectives player index starts from 1
+        return player.getAction(self.state, self.board)
 
 
     def update(self, player, action):
@@ -88,28 +95,28 @@ class Game:
         :return: Updates the gamestate a per the player action.
         """
         self.state.current_player = player
-        self.state.occupied_positions[player] = action[1]
+        self.state.occupied_positions[player] = action[0]
 
         if player == 0:
             if self.state.move_number in [5, 8, 13, 18]:
                 self.state.last_thief_location = action[1]
             self.state.thief.position = action[1]
-            if action[0] == 'T' :
+            if action[1] == 'T' :
                 self.state.thief.taxi_tickets -= 1
-            elif action[0] == 'B' :
+            elif action[1] == 'B' :
                 self.state.thief.bus_tickets -= 1
-            elif action[0] == 'U' :
+            elif action[1] == 'U' :
                 self.state.thief.ug_ticket -= 1
-            elif action[0] == 'F' :
+            elif action[1] == 'F' :
                 self.state.thief.ferry_tickets -= 1
         else:
             detective = getattr(self.state, 'detective%d' % player)
             detective.position = action[1]
-            if action[0] == 'T' :
+            if action[1] == 'T' :
                 detective.taxi_tickets -= 1
-            elif action[0] == 'B' :
+            elif action[1] == 'B' :
                 detective.bus_tickets -= 1
-            elif action[0] == 'U' :
+            elif action[1] == 'U' :
                 detective.ug_ticket -= 1
 
         return

@@ -9,10 +9,13 @@ class KeyboardAgent(Agent):
     An agent controlled by the keyboard.
     """
 
-    def __init__(self, index=0):
+    def __init__(self,index):
         self.index = index
 
-    def getAction(self, state):
+    def getAction(self, state, board):
+        current_pos = state.occupied_positions[self.index]
+        moves = board.GetPossibleMoves(current_pos)
+        print('Possible moves for keyboard agent are {}'.format(moves))
         count = 5
         while count > 0 :
             move_input = input('Enter the node number (integer) and the mode of transportation (T | B | UG) by separating '
@@ -22,6 +25,7 @@ class KeyboardAgent(Agent):
                 move = (node, transport)
                 # if move is legal :
                     # return move
+                return move
             else:
                 count -= 1
                 print("Invalid input, please enter the input in appropriate format as instructed. You have {} attempts "
@@ -32,10 +36,14 @@ class KeyboardAgent(Agent):
         if turn == '':
             return False
 
-        if not isinstance(turn[0].split(), int):
+        try:
+            _ = int(turn[0].strip())
+        except ValueError:
+            print('not an integer {}'.format(turn[0]))
             return False
 
         if turn[1].strip() not in ['T', 'B', 'UG']:
+            print('not a valid choice ' + turn[1])
             return False
 
         return True
