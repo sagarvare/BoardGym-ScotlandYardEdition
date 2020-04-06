@@ -1,7 +1,9 @@
-import Board
-import random
-# import utils
 import os
+import sys
+sys.path.append('.')
+sys.path.append('../')
+import Board
+import utils
 
 class Agent:
     """
@@ -55,28 +57,43 @@ class Game:
 
     def play(self):
         for turn in range(1,22):
-            for player in range(6):
-                action = self.PlayTurn(player)
+            for player_idx in range(6):
+                action = self.PlayTurn(player_idx)
 
                 # update state
-                self.update(player, action)
+                self.update(player_idx, action)
+            if self.state.outcome :
+                print('game over')
+                # Call another function, that displays the outcome, game history
+                # Exit from the script
+
             self.state.move_number += 1
 
                 # Check if game over
         return
 
     def PlayTurn(self, ind):
-        player = self.detectives[ind]
+        if ind == 0:
+            player = self.thief
+        else :
+            player = self.detectives[ind]
         return player.getAction(self.state)
 
 
     def update(self, player, action):
+        """
+
+        :param player: Index of the current player
+        :param action: The action taken by the current
+        :return: Updates the gamestate a per the player action.
+        """
         self.state.current_player = player
+        self.state.occupied_positions[player] = action[1]
+
         if player == 0:
             if self.state.move_number in [5, 8, 13, 18]:
                 self.state.last_thief_location = action[1]
-            self.state.occupied_positions[player] = action[1]
-            self.state.thief[0] = action [1]
+            self.state.thief.position = action[1]
             if action[0] == 'T' :
                 self.state.thief.taxi_tickets -= 1
             elif action[0] == 'B' :
@@ -88,14 +105,24 @@ class Game:
         else:
             detective = getattr(self.state, 'detective%d' % player)
             detective.position = action[1]
-            self.state.occupied_positions[action[1]]
             if action[0] == 'T' :
                 detective.taxi_tickets -= 1
             elif action[0] == 'B' :
                 detective.bus_tickets -= 1
             elif action[0] == 'U' :
                 detective.ug_ticket -= 1
+
         return
+
+    def CheckGameOver(self):
+        if self.state.occupied_positions[0] in self.state.occupied_positions[1:]:
+            self.state.outcome = 2 # detectives wins
+            return True
+        elif self.state.move_number == 21:
+            self.state.outcome = 1 # thief wins
+            return True
+
+        return False
 
 class Player:
     def __init__(self, position, bus_tickets, taxi_tickets, ug_tickets, ferry_tickets):
@@ -125,4 +152,4 @@ class GameState:
         self.current_player = 0
         self.occupied_positions = positions.copy()
         self.last_thief_location = None
-
+        self.outcome = 0

@@ -1,4 +1,7 @@
 import collections
+import sys
+sys.path.append('.')
+sys.path.append('../')
 from scotlandyard import Agent
 import random
 import copy
@@ -16,7 +19,7 @@ class Detectives(Agent) :
     def GetLegalMoves(self, gameState, moves):
         legal_moves = copy.deepcopy(moves)
         detective_state = getattr(gameState,'detective%d' % self.index)
-        for move, i in enumerate(moves):
+        for move in moves:
             if moves[0] == 'F' :
                 legal_moves.remove(move)
             elif moves[0] == 'T' and detective_state.taxi_tickets <= 0:
@@ -35,12 +38,12 @@ class Detectives(Agent) :
 class RandomAgent(Detectives):
 
     def getAction(self, gameState):
-        current_pos = gameState.detective1.position
+        # detective_state = getattr(gameState, 'detective%d' % self.index)
+        current_pos = gameState.occupied_positions[self.index]
         moves = gameState.board.GetPossibleMoves(current_pos)
         legal_moves = self.GetLegalMoves(gameState,moves)
-        move = random.choice(legal_moves)
 
-        return move
+        return random.choice(legal_moves)
 
 
 class MinimaxAgent(Detectives):

@@ -72,9 +72,9 @@ def readCommand( argv ):
     elif options.role == 'detective' :
         args['role'] = 'detective1'
         if options.D1 == 'KeyboardAgent':
-            args['detectives'] = [keyboardAgents.KeyboardAgent()] + [detectives.RandomAgent(i+1) for i in range(1,options.numDetectives)]
+            args['detectives'] = [keyboardAgents.KeyboardAgent(1)] + [detectives.RandomAgent(i+1) for i in range(1,options.numDetectives)]
         elif options.D1 == 'minimax':
-            args['detectives'] = [detectives.MinimaxAgent()] + [detectives.RandomAgent(i+1) for i in range(1,options.numDetectives)]
+            args['detectives'] = [detectives.MinimaxAgent(1)] + [detectives.RandomAgent(i+1) for i in range(1,options.numDetectives)]
         # multiple elif conditions or use the load agent module from the pacman script.
         elif options.D1 == 'random':
             args['detectives'] = [detectives.RandomAgent(i+1) for i in range(options.numDetectives)]

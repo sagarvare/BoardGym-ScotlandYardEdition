@@ -1,7 +1,12 @@
+import copy
+import random
+import sys
+sys.path.append('.')
+sys.path.append('../')
 from scotlandyard import Agent
 
 
-class thief(Agent):
+class Thief(Agent):
     def __init__(self, depth = '2', evalFn = None):
         self.index = 0
         self.depth = int(depth)
@@ -11,12 +16,25 @@ class thief(Agent):
     def evaluationFunction(self, gameState, action):
         pass
 
-class RandomAgent(thief):
+    def GetLegalMoves(self, gameState, moves):
+        legal_moves = copy.deepcopy(moves)
+        for move in moves:
+            if move[0] == 'F' and gameState.thief.ferry_tickets <= 0:
+                legal_moves.remove(move)
+
+        return legal_moves
+
+class RandomAgent(Thief):
 
     def getAction(self, gameState):
-        pass
+        current_pos = gameState.occupied_positions[self.index]
+        moves = gameState.board.GetPossibleMoves(current_pos)
+        legal_moves = self.GetLegalMoves(gameState,moves)
 
-class MinimaxAgent(thief):
+        return random.choice(legal_moves)
+
+
+class MinimaxAgent(Thief):
   """
     Your minimax agent (problem 1)
   """
@@ -25,7 +43,7 @@ class MinimaxAgent(thief):
       pass
 
 
-class AlphaBetaAgent(thief) :
+class AlphaBetaAgent(Thief) :
 
     def getAction(self, gameState):
         pass
