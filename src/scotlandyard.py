@@ -125,8 +125,8 @@ class Game:
 
     def CheckGameOver(self):
         if self.state.occupied_positions[0] in self.state.occupied_positions[1:]:
-            print("One of the detectives caught the thief.")
-            print("Thief's location:", self.state.occupied_positions[0])
+            print("\nOne of the detectives caught the thief.")
+            print("\nThief's location:", self.state.occupied_positions[0])
             for idx in range(1,6):
                 if (self.state.occupied_positions[idx] == self.state.occupied_positions[0]):
                     print("The detective #", idx, " caught the thief.")
