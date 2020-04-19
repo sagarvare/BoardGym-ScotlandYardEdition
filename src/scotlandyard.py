@@ -60,6 +60,7 @@ class Game:
         for turn in range(1,22):
             print('Playing turn {}'.format(turn))
             for player_idx in range(6):
+                ## TODO(svare): Need to check for the validity of action, here.
                 action = self.PlayTurn(player_idx)
                 print('Action chosen by the player {} is {} and {}'.format(player_idx, action[0], action[1]))
                 if player_idx == 0:
@@ -83,6 +84,7 @@ class Game:
         if ind == 0:
             player = self.thief
         else :
+            ##TODO(svare): Mask the thief's position here.
             player = self.detectives[ind-1] #since the detectives list start with 0 indexing but the detectives player index starts from 1
         return player.getAction(self.state, self.board)
 
@@ -123,6 +125,11 @@ class Game:
 
     def CheckGameOver(self):
         if self.state.occupied_positions[0] in self.state.occupied_positions[1:]:
+            print("\nOne of the detectives caught the thief.")
+            print("\nThief's location:", self.state.occupied_positions[0])
+            for idx in range(1,6):
+                if (self.state.occupied_positions[idx] == self.state.occupied_positions[0]):
+                    print("The detective #", idx, " caught the thief.")
             self.state.outcome = 2 # detectives wins
             return True
         elif self.state.move_number == 21:
