@@ -15,6 +15,11 @@ class Detectives(Agent) :
             self.evaluationFunction = evalFn
 
     def evaluationFunction(self, gameState, action):
+        # Ideas on evaluation function :
+        # 1 :
+        #
+        #
+        #
         pass
 
     def GetLegalMoves(self, gameState, moves):
@@ -43,9 +48,15 @@ class RandomAgent(Detectives):
         current_pos = gameState.occupied_positions[self.index]
         moves = board.GetPossibleMoves(current_pos)
         legal_moves = self.GetLegalMoves(gameState,moves)
-        # pdb.set_trace()
         return random.choice(legal_moves)
 
+
+class GreedyBFSAgent(Detectives):
+
+    def getAction(self, gameState, board, depth=2):
+        current_pos = gameState.occupied_positions[self.index]
+        moves = board.GetPossibleMoves(current_pos)
+        legal_moves = self.GetLegalMoves(gameState,moves)
 
 class MinimaxAgent(Detectives):
   """
