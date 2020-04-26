@@ -72,7 +72,7 @@ class Board():
 		for node_number in node.adjacent_ug_nodes:
 			possible_moves.append((node_number, "U"))
 
-		return possible_moves   
+		return possible_moves
 
 	def ReadBoard(self, game_file):
 		"""
@@ -104,10 +104,39 @@ class Board():
 		print('INFO - Successfully completed reading the input file. THe board is now configured.')
 
 	def GetNRandomPositions(self, N=6):
-		'''
-		Returns N random unique positions within the board.
-		'''
+		"""
+			Returns N random unique positions within the board.
+			:param N:
+			:return:
+		"""
+
 		return [1, 10, 20, 30, 40, 50]
+
+	def GetDistanceBetweenNodes(self, node1, node2):
+		'''
+		Returns a tuple of shortest distance in edges between node1 and node2 and the means of transportationalong the
+		shortes path. For ex. (3, T,B,T)
+		:param node1:
+		:param node2:
+		:return:
+		'''
+		pass
+
+	def WithinOneStep(self, node1, node2):
+		node1 = self.GetNode(node1)
+		node2 = self.GetNode(node2)
+		if node2 in node1.adjacent_bus_nodes:
+			return True
+		elif node2 in node1.adjacent_taxi_nodes:
+			return True
+		elif node2 in node1.adjacent_ug_nodes:
+			return True
+		elif node2 in node1.adjacent_ferry_nodes:
+			return True
+		else:
+			return False
+
+
 
 def RunTest():
 	## TODO(svare) : Machine Independent test.
