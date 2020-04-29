@@ -56,7 +56,7 @@ class Board():
 
 	def GetPossibleMoves(self, node_number):
 		"""
-		returns a bunch of possible moves from the given node.
+		returns a list of bunch of possible moves from the given node.
 		"""
 		node = self.GetNode(node_number)
 		possible_moves = []

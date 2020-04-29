@@ -4,6 +4,7 @@ sys.path.append('.')
 sys.path.append('../')
 import Board
 import utils
+from collections import defaultdict
 
 class Agent:
     """
@@ -52,27 +53,42 @@ class Game:
 
         self.thief = thief
         self.detectives = detectives
-        self.state = GameState(self.board.GetNRandomPositions())
+        start_positions = self.board.GetNRandomPositions()
+        self.state = GameState(start_positions)
+        self.log = defaultdict(list)
+        self.log[0] = start_positions
+        self.possible_thief_nodes = None
         return
 
     def play(self):
+        '''
+
+        :return:
+        '''
         print('The starting positions of all the player is {}'.format(self.state.occupied_positions))
         for turn in range(1,22):
+            actions = []
+            self.state.last_moves = []
             print('Playing turn {}'.format(turn))
             for player_idx in range(6):
                 ## TODO(svare): Need to check for the validity of action, here.
                 action = self.PlayTurn(player_idx)
-                print('Action chosen by the player {} is {} and {}'.format(player_idx, action[0], action[1]))
+                print('Action chosen by the player {} is - node : {} and mode : {}'.format(player_idx, action[0], action[1]))
                 if player_idx == 0:
-                    if self.CheckGameOver():
+                    if self.CheckGameOver(turn):
                         print('game over')
                         sys.exit(0)
+
+                self.state.last_moves.append(action[1])
                 # update state
                 self.update(player_idx, action)
+
+
+            self.UpdateLog(turn, actions) #TODO(saahil) Write a test case for checking the UpdateLog code
             if self.CheckGameOver() :
                 print('game over')
                 sys.exit(0)
-                #TODO Call another function, that displays the outcome, game history and other stats and details of the current game.
+                #TODO Call another function, that displays game history and other stats and details of the current game.
                 #TODO Exit from the script.
 
             self.state.move_number += 1
@@ -81,11 +97,17 @@ class Game:
         return
 
     def PlayTurn(self, ind):
+        '''
+
+        :param ind:
+        :return:
+        '''
         if ind == 0:
             player = self.thief
         else :
-            ##TODO(svare): Mask the thief's position here.
             player = self.detectives[ind-1] #since the detectives list start with 0 indexing but the detectives player index starts from 1
+            self.possible_thief_nodes = player.UpdatePossibleThiefNodes(self.state, self.board, self.state.last_moves[0],
+                                                                        self.possible_thief_nodes)
         return player.getAction(self.state, self.board)
 
 
@@ -97,12 +119,10 @@ class Game:
         :return: Updates the gamestate a per the player action.
         """
         self.state.current_player = player
-        self.state.occupied_positions[player] = action[0]
-
         if player == 0:
             if self.state.move_number in [5, 8, 13, 18]:
-                self.state.last_thief_location = action[1]
-            self.state.thief.position = action[1]
+                self.state.last_thief_location = action[0]
+            # self.state.thief.position = action[0]
             if action[1] == 'T' :
                 self.state.thief.taxi_tickets -= 1
             elif action[1] == 'B' :
@@ -112,8 +132,9 @@ class Game:
             elif action[1] == 'F' :
                 self.state.thief.ferry_tickets -= 1
         else:
+            self.state.occupied_positions[player] = action[0]
             detective = getattr(self.state, 'detective%d' % player)
-            detective.position = action[1]
+            detective.position = action[0]
             if action[1] == 'T' :
                 detective.taxi_tickets -= 1
             elif action[1] == 'B' :
@@ -123,12 +144,17 @@ class Game:
 
         return
 
-    def CheckGameOver(self):
-        if self.state.occupied_positions[0] in self.state.occupied_positions[1:]:
+    def CheckGameOver(self, turn):
+        '''
+
+        :return:
+        '''
+        thief_location = self.log[turn][0][0]
+        if thief_location in self.state.occupied_positions[1:]:
             print("\nOne of the detectives caught the thief.")
-            print("\nThief's location:", self.state.occupied_positions[0])
+            print("\nThief's location : {}".format(thief_location))
             for idx in range(1,6):
-                if (self.state.occupied_positions[idx] == self.state.occupied_positions[0]):
+                if (self.state.occupied_positions[idx] == thief_location):
                     print("The detective #", idx, " caught the thief.")
             self.state.outcome = 2 # detectives wins
             return True
@@ -137,6 +163,14 @@ class Game:
             return True
 
         return False
+
+    def UpdateLog(self, turn, actions):
+        '''
+        Updates the log of the game with the actions take by each player during every turn. For thief it only updates
+        the mode of transportation used.
+        '''
+        self.log[turn] = actions
+
 
 class Player:
     def __init__(self, position, bus_tickets, taxi_tickets, ug_tickets, ferry_tickets):
@@ -156,7 +190,9 @@ class GameState:
         '''
         :param positions: a list of 6 integers that determine the starting position of each player
         '''
-        self.thief = Player(positions[0], 1000, 1000, 1000, 3)
+        #TODO remove the thief location from gameState. Since access of gamestate is given to students, it cannot have
+        # the current thief location in it. The most recent thief location will be maintained in log
+        self.thief = Player('null', 1000, 1000, 1000, 3)
         self.detective1 = Player(positions[1], 12, 8, 4, 0)
         self.detective2 = Player(positions[2], 12, 8, 4, 0)
         self.detective3 = Player(positions[3], 12, 8, 4, 0)
@@ -164,6 +200,7 @@ class GameState:
         self.detective5 = Player(positions[5], 12, 8, 4, 0)
         self.move_number = 1
         self.current_player = 0
-        self.occupied_positions = positions.copy()
+        self.occupied_positions = ['null'] + positions[1:]
         self.last_thief_location = None
         self.outcome = 0
+        self.last_moves = [] # a list containing the last mode of transportation used by the players
