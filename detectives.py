@@ -14,7 +14,7 @@ class Detectives(Agent) :
         if evalFn is not None:
             self.evaluationFunction = evalFn
 
-        self.possible_thief_nodes = None
+        # self.possible_thief_nodes = None
 
     def evaluationFunction(self, gameState, board, action, depth = 1):
         possible_detective_locations = set()
@@ -59,32 +59,30 @@ class Detectives(Agent) :
 
         return legal_moves
 
-    def UpdatePossibleThiefNodes(self, gameState, board, thief_mode, possible_thief_nodes):
+    def UpdatePossibleThiefNodes(self, gameState, board, thief_mode):
         '''
-        Calculates all the posible nodes
+        Calculates all the posible nodes where the thief given previous possible locations for thief and the current move
+        made by thief
         :param gameState:
         :return:
         '''
         #TODO(Saahil) Write a test for testing this function
         new_thief_nodes = set()
-        if self.index != 1: # if other than first detective, then just use what first detective has computed
-            self.possible_thief_nodes = possible_thief_nodes.copy()
-            return possible_thief_nodes
-        if gameState.move_number < 5: return None
+        if gameState.move_number < 5: return
 
         if gameState.move_number in [5, 8, 13, 18]:
             new_thief_nodes = set(gameState.last_thief_location)
 
         else:
-            for node in possible_thief_nodes:
+            for node in gameState.possible_thief_nodes:
                 moves = board.GetPossibleMoves(node)
                 for move in moves:
                     if move[1] == thief_mode:
                         new_thief_nodes.add(move[0])
 
-        self.possible_thief_nodes = new_thief_nodes.copy()
+        gameState.possible_thief_nodes = new_thief_nodes.copy()
 
-        return new_thief_nodes
+        return
 
 class RandomAgent(Detectives):
 

@@ -57,7 +57,6 @@ class Game:
         self.state = GameState(start_positions)
         self.log = defaultdict(list)
         self.log[0] = start_positions
-        self.possible_thief_nodes = None
         return
 
     def play(self):
@@ -75,6 +74,9 @@ class Game:
                 action = self.PlayTurn(player_idx)
                 print('Action chosen by the player {} is - node : {} and mode : {}'.format(player_idx, action[0], action[1]))
                 if player_idx == 0:
+                    # update the possible locations for thief as per the new move. Update is needed only once using the
+                    # function from detective 1. Other detectives will access this from the gameState.
+                    self.detectives[0].UpdatePossibleThiefNodes(self.state, self.board, self.state.last_moves[0])
                     if self.CheckGameOver(turn):
                         print('game over')
                         sys.exit(0)
@@ -106,8 +108,6 @@ class Game:
             player = self.thief
         else :
             player = self.detectives[ind-1] #since the detectives list start with 0 indexing but the detectives player index starts from 1
-            self.possible_thief_nodes = player.UpdatePossibleThiefNodes(self.state, self.board, self.state.last_moves[0],
-                                                                        self.possible_thief_nodes)
         return player.getAction(self.state, self.board)
 
 
@@ -204,3 +204,4 @@ class GameState:
         self.last_thief_location = None
         self.outcome = 0
         self.last_moves = [] # a list containing the last mode of transportation used by the players
+        self.possible_thief_nodes = None
