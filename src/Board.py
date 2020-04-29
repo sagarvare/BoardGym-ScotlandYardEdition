@@ -16,6 +16,7 @@ class Board():
 		self.total_edges = -1
 		self.node_dict = {}
 		self.ReadBoard(game_txt_file)
+		self.GeneratePairWiseShortestDistances()
 
 	def AddNode(self, node_number):
 		'''
@@ -72,7 +73,13 @@ class Board():
 		for node_number in node.adjacent_ug_nodes:
 			possible_moves.append((node_number, "U"))
 
-		return possible_moves
+		return possible_moves  
+
+	def GetDistanceBetweenNodes(self, node_i, node_j):
+		'''
+		Returns the distance between node_i & node_j
+		''' 
+		return self.pairwise_distances[(node_i, node_j)]
 
 	def ReadBoard(self, game_file):
 		"""
@@ -104,39 +111,64 @@ class Board():
 		print('INFO - Successfully completed reading the input file. THe board is now configured.')
 
 	def GetNRandomPositions(self, N=6):
-		"""
-			Returns N random unique positions within the board.
-			:param N:
-			:return:
-		"""
-
+		'''
+		Returns N random unique positions within the board.
+		'''
 		return [1, 10, 20, 30, 40, 50]
 
-	def GetDistanceBetweenNodes(self, node1, node2):
+	def ComputeShortestDistance(self, node_i, node_j):
 		'''
-		Returns a tuple of shortest distance in edges between node1 and node2 and the means of transportationalong the
-		shortes path. For ex. (3, T,B,T)
-		:param node1:
-		:param node2:
-		:return:
+		Returns the shortest distance between node_i & node_i on the board.
 		'''
-		pass
+		nodes_marked = {}
+		current_list_of_nodes = [node_i]
+		next_set_of_nodes = set()
+		distance_between_nodes = 0
+		if node_i not in self.node_dict.keys() or node_j not in self.node_dict.keys():
+			print("ERROR - non existent node passed.")
+			return -1
+		while True:
+			curr_node = current_list_of_nodes.pop()
+			if curr_node == node_j:
+				## If this is the final_ndoe, then we are done.
+				return distance_between_nodes
 
-	def WithinOneStep(self, node1, node2):
-		node1 = self.GetNode(node1)
-		node2 = self.GetNode(node2)
-		if node2 in node1.adjacent_bus_nodes:
-			return True
-		elif node2 in node1.adjacent_taxi_nodes:
-			return True
-		elif node2 in node1.adjacent_ug_nodes:
-			return True
-		elif node2 in node1.adjacent_ferry_nodes:
-			return True
-		else:
-			return False
+			if nodes_marked.get(curr_node, False):
+				## If node is already covered pass
+				pass
+			else:
+				## Mark the node as covered now.
+				nodes_marked[curr_node] = True
 
+				moves = self.GetPossibleMoves(curr_node)
+				for move in moves:
+					next_set_of_nodes.add(move[0])
 
+			if len(current_list_of_nodes) > 0:
+				continue
+			elif len(current_list_of_nodes) == 0 and len(next_set_of_nodes) > 0:
+				distance_between_nodes+= 1
+				current_list_of_nodes = list(next_set_of_nodes)
+				next_set_of_nodes = set()
+			elif len(current_list_of_nodes) == 0 and len(next_set_of_nodes) == 0:
+				## We have reached the final condition without finding the node!
+				return -1
+		return -2
+
+	def GeneratePairWiseShortestDistances(self):
+		'''
+		Computes the shortest distances between pairs of nodes.
+		'''
+		self.pairwise_distances = defaultdict(int)
+		list_of_nodes = self.node_dict.keys()
+		for node_i in list_of_nodes:
+			for node_j in list_of_nodes:
+				if self.pairwise_distances[(node_j, node_i)] > 0:
+					self.pairwise_distances[(node_i, node_j)] = self.pairwise_distances[(node_j, node_i)]
+				else:
+					self.pairwise_distances[(node_i, node_j)] = self.ComputeShortestDistance(node_i, node_j)
+
+		return None
 
 def RunTest():
 	## TODO(svare) : Machine Independent test.
@@ -163,12 +195,35 @@ def RunTest():
 			return False
 	return True
 
+def RunTestShortestDistances():
+	## TODO(svare) : Machine Independent test.
+	game_file = "/Users/sagarvare/Documents/BoardGym-ScotlandYardEdition/data/SCOTMAP.TXT"
+	board = Board(game_file)
+
+	## Check for a basic test case.
+	distance_between_adjacent_nodes = board.GetDistanceBetweenNodes(71, 89)
+
+	## Check for a basic test case.
+	distance_between_far_away_nodes = board.GetDistanceBetweenNodes(71, 8)
+	if distance_between_adjacent_nodes == 1 and distance_between_far_away_nodes == 5:
+		return True
+	else:
+		print("distance_between_adjacent_nodes (71, 89):", distance_between_adjacent_nodes)
+		print("distance_between_far_away_nodes (71, 8):", distance_between_far_away_nodes)
+	return False
+
 
 
 
 if __name__ == '__main__':
 	if RunTest():
-		print("Test Successful.")
+		print("Test Successful for loading board.")
+	else:
+		print("\n\n\nFAILED TEST- Problems in loading board")
+	if RunTestShortestDistances():
+		print("Shortest Distances test successful.")
+	else:
+		print("\n\n\nFAILED TEST- Shortest distance test.")
 
 
 
