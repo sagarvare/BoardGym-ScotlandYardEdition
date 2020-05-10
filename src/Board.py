@@ -196,8 +196,7 @@ def RunTest():
 	return True
 
 def RunTestShortestDistances():
-	## TODO(svare) : Machine Independent test.
-	game_file = "/Users/sagarvare/Documents/BoardGym-ScotlandYardEdition/data/SCOTMAP.TXT"
+	game_file = "../data/SCOTMAP.TXT" # assuming the current working directory is the location of this file
 	board = Board(game_file)
 
 	## Check for a basic test case.
