@@ -1,10 +1,10 @@
 import copy
 import random
+import os
 import sys
-sys.path.append('.')
-sys.path.append('../')
+# sys.path.append('.')
+sys.path.append('src/')
 from scotlandyard import Agent
-
 
 class Thief(Agent):
     def __init__(self, depth = '2', evalFn = None):

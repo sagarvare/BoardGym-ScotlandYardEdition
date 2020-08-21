@@ -112,6 +112,22 @@ blink = 1
 # for testing only. ideally initialize using the node to pixel function and the positions obtained from the game code
 agents_pos = {0:(2,2), 1: (10,10), 2: (20,20), 3: (30,30), 4: (40,40), 5: (50,50)}
 
+#declaration of some ThorPy elements ...
+dropdownlist = thorpy.DropDownListLauncher(const_text='actions', titles=["proposition1", "prop2", "prop3"])#thorpy.SliderX(100, (12, 35), "My Slider")
+dropdownlist.scale_to_title()
+dropdownlist.max_chars = 12
+button = thorpy.make_button("Quit", func=thorpy.functions.quit_func)
+box = thorpy.Box(elements=[dropdownlist,button])
+#we regroup all elements on a menu, even if we do not launch the menu
+menu = thorpy.Menu(box)
+#important : set the screen as surface for all elements
+for element in menu.get_population():
+    element.surface = screen
+#use the elements normally...
+box.set_topleft((100,100))
+box.blit()
+box.update()
+
 while running:
     clock.tick(5)
     screen.fill((255,0,0))
@@ -137,14 +153,17 @@ while running:
                     player_turn = 0
                 else:
                     player_turn += 1
+        menu.react(event)
+        menu.blit_and_update()
 
     screen.blit(background, (0, 0))
-    if blink:
+    if blink: # show all agents
         DisplayAllAgents(agent_icons, agents_pos, -1)
         blink = 0
-    else:
+    else: # skip displaying the agent currently active
         DisplayAllAgents(agent_icons, agents_pos, player_turn)
         blink = 1
+    menu.blit_and_update()
 
     pygame.display.update()
 
@@ -153,3 +172,4 @@ quit()
 
 #
 # def RunUnitTest():
+thorpy.DropDownList(titles=["proposition1", "prop2", "prop3"])

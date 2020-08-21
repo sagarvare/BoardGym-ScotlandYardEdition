@@ -50,7 +50,7 @@ def readCommand( argv ):
         raise Exception('Command line input not understood: ' + str(otherjunk))
     args = dict()
     print(options)
-    #TODO There is a fancy of loading the pacman and ghost agents here bu using the script similar to pacman but right
+    #TODO There is a fancy way of loading the pacman and ghost agents here by using the script similar to pacman but right
     # now we will implement implement by string matching method
     #TODO currently assume all the detectives have the same agent type. We can later also built in arguments for defining
     # agent type for each detective

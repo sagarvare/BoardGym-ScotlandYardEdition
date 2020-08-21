@@ -1,44 +1,44 @@
 import sys
+import inspect
 import heapq, random
+from collections import deque
 
 """
  Data structures useful for implementing SearchAgents
 """
+# TODO modify the priority queue function as per the latest doc strings to add all the required functionalities.
 
-class Stack:
+class Stack(deque):
     "A container with a last-in-first-out (LIFO) queuing policy."
     def __init__(self):
-        self.list = []
+        self.stack = deque([])
 
     def push(self ,item):
-        "Push 'item' onto the stack"
-        self.list.append(item)
-
-    def pop(self):
-        "Pop the most recently pushed item from the stack"
-        return self.list.pop()
+        "Push 'item' onto the stack. In this case appends to the right"
+        self.stack.append(item)
 
     def isEmpty(self):
         "Returns true if the stack is empty"
         return len(self.list) == 0
 
 
-class Queue:
+class Queue(deque):
     "A container with a first-in-first-out (FIFO) queuing policy."
 
     def __init__(self):
-        self.list = []
+        self.queue = deque([])
 
     def push(self, item):
         "Enqueue the 'item' into the queue"
-        self.list.insert(0, item)
+        self.queue.append(item)
 
     def pop(self):
         """
           Dequeue the earliest enqueued item still in the queue. This
-          operation removes the item from the queue.
+          operation removes the item from the queue. Overwrites the standard pop function of the deque object to enforce
+          FIFO.
         """
-        return self.list.pop()
+        return self.queue.popleft()
 
     def isEmpty(self):
         "Returns true if the queue is empty"
@@ -72,7 +72,7 @@ class PriorityQueue:
 
 
 def raiseNotDefined():
-  print ("Method not implemented: %s" % inspect.stack()[1][3])
+  print (f"Method not implemented: {inspect.stack()[1][3]}")
   sys.exit(1)
 
 def flipCoin(p) :

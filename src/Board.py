@@ -1,5 +1,4 @@
 from collections import defaultdict
-import pandas as pd
 import csv
 
 class Node():
@@ -118,7 +117,7 @@ class Board():
 
 	def ComputeShortestDistance(self, node_i, node_j):
 		'''
-		Returns the shortest distance between node_i & node_i on the board.
+		Returns the shortest distance between node_i & node_j on the board.
 		'''
 		nodes_marked = {}
 		current_list_of_nodes = [node_i]
