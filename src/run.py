@@ -113,7 +113,7 @@ if __name__ == '__main__':
   """
   args = readCommand( sys.argv[1:] ) # Get game components based on input
   # runGames( **args )
-  print(*args)
+  # print(*args)
   game = Game(**args)
   game.play()
 # ---------------------------------------------------------------------------------------------------------

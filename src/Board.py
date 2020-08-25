@@ -1,5 +1,6 @@
 from collections import defaultdict
 import csv
+import random
 
 class Node():
 	def __init__(self, pos):
@@ -59,7 +60,6 @@ class Board():
 		"""
 		node = self.GetNode(node_number)
 		possible_moves = []
-
 		for node_number in node.adjacent_ferry_nodes:
 			possible_moves.append((node_number , "F"))
 
@@ -113,7 +113,7 @@ class Board():
 		'''
 		Returns N random unique positions within the board.
 		'''
-		return [1, 10, 20, 30, 40, 50]
+		return random.sample(range(self.total_nodes), N) #[1, 10, 20, 30, 40, 50]
 
 	def ComputeShortestDistance(self, node_i, node_j):
 		'''
@@ -169,15 +169,11 @@ class Board():
 
 		return None
 
-def RunTest():
-	## TODO(svare) : Machine Independent test.
-	game_file = "/Users/sagarvare/Documents/BoardGym-ScotlandYardEdition/data/SCOTMAP.TXT"
-	board = Board(game_file)
-
+def RunTest(board):
 	## Check for a basic test case.
 	possible_moves = board.GetPossibleMoves(89)
 	expected_possible_moves = set([(71, "T"), (88, "T"), (105, "T"), (55, "B"), (105, "B"), (13, "U"), (67, "U"), (140, "U"), (128, "U")])
-	
+	print(possible_moves)
 	for move in possible_moves:
 		if move in expected_possible_moves:
 			continue
@@ -194,10 +190,7 @@ def RunTest():
 			return False
 	return True
 
-def RunTestShortestDistances():
-	game_file = "../data/SCOTMAP.TXT" # assuming the current working directory is the location of this file
-	board = Board(game_file)
-
+def RunTestShortestDistances(board):
 	## Check for a basic test case.
 	distance_between_adjacent_nodes = board.GetDistanceBetweenNodes(71, 89)
 
@@ -214,11 +207,14 @@ def RunTestShortestDistances():
 
 
 if __name__ == '__main__':
-	if RunTest():
+	## TODO(svare) : Machine Independent test.
+	game_file = "/Users/saahil/Documents/random/BoardGym-ScotlandYardEdition/data/SCOTMAP.TXT"
+	board = Board(game_file)
+	if RunTest(board):
 		print("Test Successful for loading board.")
 	else:
 		print("\n\n\nFAILED TEST- Problems in loading board")
-	if RunTestShortestDistances():
+	if RunTestShortestDistances(board):
 		print("Shortest Distances test successful.")
 	else:
 		print("\n\n\nFAILED TEST- Shortest distance test.")

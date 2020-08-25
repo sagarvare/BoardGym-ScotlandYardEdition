@@ -25,13 +25,13 @@ class Agent:
         """
         utils.raiseNotDefined()
 
-    def GetLegalMoves(self):
+    def GetLegalMoves(self, state, moves):
         utils.raiseNotDefined()
 
 
 class Constants:
     input_file_name = 'SCOTMAP.TXT'
-    current_directory = '../data'
+    data_directory = '/Users/saahil/Documents/random/BoardGym-ScotlandYardEdition/data'
     max_turns = 22
     max_tries = 5
     number_of_players = 6
@@ -48,9 +48,9 @@ class Game:
         :param level: for different types of adverserial agents where higher level indicates more adavnced agent
         '''
 
-        self.board = Board.Board(os.path.join(Constants.current_directory,Constants.input_file_name))
+        self.board = Board.Board(os.path.join(Constants.data_directory,Constants.input_file_name))
         self.human_player = role # either 'thief' or 'detective'. if multiple players then it has to be designed differently
-
+        print(self.board.GetPossibleMoves(1))
         if isinstance(level, int) and level <= 5 and level >= 1:
             self.level = level
         else :
@@ -89,27 +89,21 @@ class Game:
                 print(f'Action chosen by the player {player_idx} is - node : {action[0]} and mode : {action[1]}')
                 if player_idx == 0:
                     # update the possible locations for thief as per the new move. Update is needed only once using the
-                    # function from detective 1. Other detectives will access this from the gameState.
-                    self.detectives[0].UpdatePossibleThiefNodes(self.state, self.board, self.state.last_moves[0])
-                    if self.CheckGameOver(turn):
-                        print('game over')
-                        sys.exit(0)
+                    self.state.UpdatePossibleThiefNodes(self.board, action[1])
 
                 actions.append(action)
                 # self.state.last_moves.push(action[1])
                 # update state
                 self.UpdateState(player_idx, action)
+                if self.CheckGameOver():
+                    print('game over')
+                    sys.exit(0)
+                    # TODO Call another function, that displays game history and other stats and details of the current game.
 
             self.UpdateLog(turn, actions) #TODO(saahil) Write a test case for checking the UpdateLog code
 
-            if self.CheckGameOver() :
-                print('game over')
-                sys.exit(0)
-                #TODO Call another function, that displays game history and other stats and details of the current game.
-
             self.state.move_number += 1
             print('The new occupied positions by the players are {}'.format(self.state.occupied_positions))
-                # Check if game over
         return
 
     def PlayTurn(self, ind):
@@ -119,18 +113,18 @@ class Game:
         :return:
         '''
         game_state_copy = copy.deepcopy(self.state)
-        game_state_copy.occupied_positions[0] = 'null'
-        game_state_copy.thief.position = 'null'
         if ind == 0:
             player = self.thief
         else :
+            game_state_copy.occupied_positions[0] = 'null'
+            game_state_copy.thief.position = 'null'
             player = self.detectives[ind-1] #since the detectives list start with 0 indexing but the detectives player index starts from 1
         return player.getAction(game_state_copy, self.board)
 
 
     def ValidateAction(self, player_idx, action):
         if player_idx == 0:
-            if self.thief.resources[action[1]] <= 0: return False
+            if self.state.thief.resources[action[1]] <= 0: return False
 
         else:
             player = getattr(self.state, 'detective%d' % player_idx)
@@ -173,7 +167,7 @@ class Game:
         #TODO (svare) Write the undo function to revert the game by specified number of steps
         pass
 
-    def CheckGameOver(self, turn):
+    def CheckGameOver(self):
         '''
 
         :return:
@@ -187,13 +181,12 @@ class Game:
                     print(f"The detective #{idx} caught the thief.")
             self.state.outcome = 2 # detectives wins
             return True
-        elif self.state.move_number == 21:
+        elif self.state.move_number == Constants.max_turns - 1:
             self.state.outcome = 1 # thief wins
             print('Thief wins the game')
             return True
 
         return False
-
 
 
 class Player:
@@ -211,9 +204,7 @@ class GameState:
         '''
         :param positions: a list of 6 integers that determine the starting position of each player
         '''
-        #TODO remove the thief location from gameState. Since access of gamestate is given to students, it cannot have
-        # the current thief location in it. The most recent thief location will be maintained in log
-        self.thief = Player(positions[1], 1000, 1000, 1000, 3)
+        self.thief = Player(positions[0], 1000, 1000, 1000, 3)
         self.detective1 = Player(positions[1], 12, 8, 4, 0)
         self.detective2 = Player(positions[2], 12, 8, 4, 0)
         self.detective3 = Player(positions[3], 12, 8, 4, 0)

@@ -81,6 +81,7 @@ class RandomAgent(Detectives):
         current_pos = game_state.occupied_positions[self.index]
         moves = board.GetPossibleMoves(current_pos)
         legal_moves = self.GetLegalMoves(game_state,moves)
+        print(f'detective legal moves : {legal_moves}')
         return random.choice(legal_moves)
 
 

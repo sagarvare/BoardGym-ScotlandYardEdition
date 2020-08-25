@@ -26,9 +26,12 @@ class Thief(Agent):
 
 class RandomAgent(Thief):
 
-    def getAction(self, gameState, board, current_pos):
-        # current_pos = gameState.occupied_positions[self.index]
+    def getAction(self, gameState, board):
+        current_pos = gameState.thief.position
+        node = board.GetNode(current_pos)
+        print(node.adjacent_taxi_nodes, node.adjacent_bus_nodes)
         moves = board.GetPossibleMoves(current_pos)
+        print(f'thief possible moves : {moves}')
         legal_moves = self.GetLegalMoves(gameState,moves)
 
         return random.choice(legal_moves)
